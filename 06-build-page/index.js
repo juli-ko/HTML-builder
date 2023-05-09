@@ -51,28 +51,28 @@ const componentsPath = path.join(__dirname,'components');
     })
 })();
 
-// Использовать скрипт из задания 04-copy-directory для переноса папки assets в папку project-dist
-// (async function copyFiles(){
-//     async function copyDir(dir, dest){
-//         fsPromise.readdir(path.join(__dirname, 'assets'),{withFileTypes: true})
-//         .then((files) =>{
-//                 files.forEach(async(file) =>{
-//                 if (file.isDirectory()){ 
-//                     const dirPathNew = path.join(dir, file.name);
-//                     const destPathNew = path.join(dest, file.name);
-//                     //await fsPromise.mkdir(destPathNew, { recursive: true });
-//                     await copyDir(dirPathNew, destPathNew);
-//                 }else{
-//                     let pathFile = path.join(dir, file.name)
-//                     let pathCopy = path.join(dest, file.name)
-//                     // Копирование файлов из папки files в папку files-copy
-//                     fsPromise.copyFile(pathFile, pathCopy)
-//                 }
-//             })
-//         })}
-//     let pathFile = path.join(__dirname, 'assets')
-//     let pathCopy = path.join(__dirname, 'project-dist','assets')
-//     await fsPromise.rm(pathCopy, { recursive: true , force:true})
-//     await fsPromise.mkdir(pathCopy, { recursive: true })
-//     copyDir(pathFile, pathCopy)
-// })();
+//Использовать скрипт из задания 04-copy-directory для переноса папки assets в папку project-dist
+(async function copyFiles(){
+    async function copyDir(dir, dest){
+        fsPromise.readdir(dir,{withFileTypes: true})
+        .then((files) =>{
+                files.forEach(async(file) =>{
+                    if (file.isDirectory() && !file.isFile()){ 
+                        const pathFile = path.join(dir, file.name);
+                        const pathCopy = path.join(dest, file.name);
+                        await fsPromise.mkdir(pathCopy, { recursive: false });
+                        await copyDir(pathFile, pathCopy);
+                    }else{
+                        let pathFile = path.join(dir, file.name)
+                        let pathCopy = path.join(dest, file.name)
+                        // Копирование файлов из папки files в папку files-copy
+                        fsPromise.copyFile(pathFile, pathCopy)
+                    }
+            })
+        })}
+    let pathFile = path.join(__dirname, 'assets')
+    let pathCopy = path.join(__dirname, 'project-dist','assets')
+    await fsPromise.rm(pathCopy, { recursive: true , force:true})
+    await fsPromise.mkdir(pathCopy, { recursive: true })
+    copyDir(pathFile, pathCopy)
+})();
